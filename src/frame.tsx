@@ -9,9 +9,9 @@ const Frame: React.FC = () => {
                 <div className="demo-logo" >
                     logo占位符
                 </div>
-                <Link to="/api/requests">实时请求</Link>
+                <Link to="/mock/requests">实时请求</Link>
             
-                <Link to="/api/requests">MOCK</Link>
+                <Link to="/mock/requests">MOCK</Link>
             </Header>
             <Content style={{ padding: '0 50px', height: '100%' }}>
                 <Outlet/>

@@ -8,7 +8,7 @@ function Router() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={ <Navigate replace to="/api/home" />} />
-                <Route path="/api"  element={<Frame />} >
+                <Route path="/mock"  element={<Frame />} >
                     <Route path="home" element={<Home />} />
                     <Route path="requests" element={<Requests />} />
                 </Route>
