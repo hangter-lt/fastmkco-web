@@ -10,8 +10,8 @@ const Frame: React.FC = () => {
                     logo占位符
                 </div>
                 <Link to="/mock/requests">实时请求</Link>
-            
-                <Link to="/mock/requests">MOCK</Link>
+                <p> | </p>
+                <Link to="/mock/files">MOCK</Link>
             </Header>
             <Content style={{ padding: '0 50px', height: '100%' }}>
                 <Outlet/>
