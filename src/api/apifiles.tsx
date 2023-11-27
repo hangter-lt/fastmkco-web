@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Button, Layout, Tree, theme, Switch } from 'antd';
 import axios from 'axios';
 
+
 const { Content, Sider } = Layout;
+
+// const vditor = new Vditor("md", {mode:"sv"})
 
 const ApiFiles: React.FC = () => {
     const {
@@ -11,13 +14,28 @@ const ApiFiles: React.FC = () => {
 
     const [showIcon, setShowIcon] = useState<boolean>(false);
 
-
     const [tree, setTree] = useState([])
+
+    const [content, setContent] = useState("")
 
     function getTree() {
         axios.get("/api/tree").then((res) => {
             setTree(res.data)
         })
+    }
+
+    function a(selectedKeys: any, e: {
+        event: 'select';
+        selected: boolean;
+        node: any;
+        selectedNodes: any;
+        nativeEvent: MouseEvent;
+    }) {
+        if (e.node.type == "file") {
+            axios.get("/api/file/" + e.node.key).then((res) => {
+                setContent(res.data)
+            })
+        }
     }
 
     useEffect(() => {
@@ -33,12 +51,14 @@ const ApiFiles: React.FC = () => {
                 <Tree
                     showIcon={showIcon}
                     treeData={tree}
+                    onSelect={a}
                 />
 
             </Sider>
             <Content style={{ padding: '30px 30px', display: "flex" }}>
+                {content}
             </Content>
-        </Layout>
+        </Layout >
     );
 };
 
