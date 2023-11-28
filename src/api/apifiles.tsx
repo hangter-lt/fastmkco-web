@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Layout, Tree, theme, Switch } from 'antd';
 import axios from 'axios';
+import { MdEditor } from 'md-editor-rt';
+import 'md-editor-rt/lib/style.css';
 
 
 const { Content, Sider } = Layout;
@@ -56,7 +58,7 @@ const ApiFiles: React.FC = () => {
 
             </Sider>
             <Content style={{ padding: '30px 30px', display: "flex" }}>
-                {content}
+                <MdEditor modelValue={content} style={{ height: "100%" }} />;
             </Content>
         </Layout >
     );
