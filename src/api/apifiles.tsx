@@ -7,8 +7,6 @@ import 'md-editor-rt/lib/style.css';
 
 const { Content, Sider } = Layout;
 
-// const vditor = new Vditor("md", {mode:"sv"})
-
 const ApiFiles: React.FC = () => {
     const {
         token: { colorBgContainer },
@@ -19,6 +17,10 @@ const ApiFiles: React.FC = () => {
     const [tree, setTree] = useState([])
 
     const [content, setContent] = useState("")
+    
+    const [editContent, setEditContent] = useState(content)
+
+    const [path, setPath] = useState("")
 
     function getTree() {
         axios.get("/api/tree").then((res) => {
@@ -26,18 +28,32 @@ const ApiFiles: React.FC = () => {
         })
     }
 
-    function a(selectedKeys: any, e: {
+    const select = (selectedKeys: any, e: {
         event: 'select';
         selected: boolean;
         node: any;
         selectedNodes: any;
         nativeEvent: MouseEvent;
-    }) {
+    }) => {
         if (e.node.type == "file") {
             axios.get("/api/file/" + e.node.key).then((res) => {
                 setContent(res.data)
+                setPath(e.node.key)
             })
         }
+    }
+
+    const change = (v: string) => {
+        setEditContent(v)
+    }
+
+    const save = (v: string, h: Promise<string>)=> {
+        axios.post("/api/files/write", {
+            "path": path,
+            "file": editContent,
+        }).then((res) => {
+            console.log(res)
+        })
     }
 
     useEffect(() => {
@@ -53,12 +69,17 @@ const ApiFiles: React.FC = () => {
                 <Tree
                     showIcon={showIcon}
                     treeData={tree}
-                    onSelect={a}
+                    onSelect={select}
                 />
 
             </Sider>
             <Content style={{ padding: '30px 30px', display: "flex" }}>
-                <MdEditor modelValue={content} style={{ height: "100%" }} />;
+                <MdEditor
+                    modelValue={content}
+                    style={{ height: "100%" }}
+                    onSave={save}
+                    onChange={change}
+                />;
             </Content>
         </Layout >
     );
