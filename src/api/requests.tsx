@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, theme, Space, Card, Button, Tag, Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, theme, Card, Tag, Row, Col } from 'antd';
 import MenuItem from 'antd/es/menu/MenuItem';
 import Item from 'antd/es/list/Item';
 import axios from "axios";
@@ -15,6 +15,7 @@ type Item = {
 type Items = Item[]
 const menuItems: Items = []
 var menuItem: Items = []
+const r: Reqres = {}
 
 type Reqres = {
   id?: number
@@ -29,40 +30,46 @@ type Reqres = {
   reason?: string
 }
 
-const r: Reqres = {}
-
-const eventSource = new EventSource(`/api/requests`);
 
 const Requests: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
+
   const [reqs, setReqs] = useState(menuItems)
   const [rr, setRr] = useState(r)
 
-  function getRequest(id: number | undefined) {
+  useEffect(() => {
+    menuItem = []
+
+    const eventSource = new EventSource(`/api/requests`);
+    eventSource.onopen = function () {
+      console.log("open")
+    }
+    eventSource.onmessage = function (ev) {
+      console.log("event")
+      const item: Item = JSON.parse(ev.data);
+      setReqs([item].concat(menuItem))
+      menuItem.unshift(item)
+    };
+    eventSource.onerror = function () {
+      console.log("error");
+      eventSource.close();
+    };
+   
+    return () => {
+      eventSource.close()
+      console.log("close")
+    }
+
+  }, []);
+
+  const getRequest = (id: number | undefined) => {
     axios.get("/api/requests/" + id).then((res) => {
       setRr(res.data)
     })
   }
-
-  // 处理事件流
-  eventSource.onopen = function () {
-    console.log("open")
-  }
-  eventSource.onmessage = function (ev) {
-
-    console.log("event")
-    const item: Item = JSON.parse(ev.data);
-    setReqs([item].concat(menuItem))
-    menuItem.unshift(item)
-  };
-  eventSource.onerror = function () {
-    console.log("error");
-    eventSource.close();
-  };
-
 
   return (
     <Layout style={{ height: '100%', padding: '10px 0px', background: colorBgContainer }}>

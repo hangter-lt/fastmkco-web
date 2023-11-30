@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Layout, Tree, theme, Switch } from 'antd';
+import { Layout, Tree, theme, Switch } from 'antd';
 import axios from 'axios';
 import { MdEditor } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
@@ -28,6 +28,7 @@ const ApiFiles: React.FC = () => {
         })
     }
 
+    // @ts-ignore
     const select = (selectedKeys: any, e: {
         event: 'select';
         selected: boolean;
@@ -46,7 +47,8 @@ const ApiFiles: React.FC = () => {
     const change = (v: string) => {
         setEditContent(v)
     }
-
+    
+    // @ts-ignore
     const save = (v: string, h: Promise<string>)=> {
         axios.post("/api/files/write", {
             "path": path,
