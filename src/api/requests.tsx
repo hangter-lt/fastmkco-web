@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { Layout, Menu, theme, Card, Tag, Row, Col } from 'antd';
 import MenuItem from 'antd/es/menu/MenuItem';
 import Item from 'antd/es/list/Item';
@@ -39,11 +39,12 @@ const Requests: React.FC = () => {
 
   const [reqs, setReqs] = useState(menuItems)
   const [rr, setRr] = useState(r)
+  const linkId = useId()
 
   useEffect(() => {
     menuItem = []
 
-    const eventSource = new EventSource(`/api/requests`);
+    const eventSource = new EventSource("/api/requests?link_id=" + linkId);
     eventSource.onopen = function () {
       console.log("open")
     }
@@ -59,8 +60,10 @@ const Requests: React.FC = () => {
     };
    
     return () => {
+      axios.get("/api/close?link_id=" + linkId).then((res) => {
+        console.log(res.data)
+      })
       eventSource.close()
-      console.log("close")
     }
 
   }, []);
