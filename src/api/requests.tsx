@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useId } from 'react';
 import { Layout, Menu, theme, Card, Tag, Row, Col } from 'antd';
+import { ClockCircleOutlined } from '@ant-design/icons';
 import MenuItem from 'antd/es/menu/MenuItem';
 import Item from 'antd/es/list/Item';
 import axios from "axios";
@@ -17,7 +18,9 @@ type Item = {
 type Items = Item[]
 const menuItems: Items = []
 var menuItem: Items = []
-const r: Reqres = {}
+const r: Reqres = {
+  time: 0
+}
 
 type Reqres = {
   id?: number
@@ -30,6 +33,7 @@ type Reqres = {
   content?: string
   result?: string
   reason?: string
+  time: number
 }
 
 
@@ -60,9 +64,9 @@ const Requests: React.FC = () => {
       console.log("error");
       eventSource.close();
     };
-   
+
     return () => {
-        axios.get(API_REQUESTS_CLOSE + linkId).then((res) => {
+      axios.get(API_REQUESTS_CLOSE + linkId).then((res) => {
         console.log(res.data)
       })
       eventSource.close()
@@ -75,6 +79,8 @@ const Requests: React.FC = () => {
       setRr(res.data)
     })
   }
+
+  const reqTime = new Date(rr.time).toLocaleString()
 
   return (
     <Layout style={{ height: '100%', padding: '10px 0px', background: colorBgContainer }}>
@@ -94,6 +100,11 @@ const Requests: React.FC = () => {
         <Row style={{ width: "100%" }}>
           <Col span={8}>
             <Card title="请求" style={{ width: "100%" }}>
+              <Card>
+                <Tag icon={<ClockCircleOutlined />} color="purple">
+                  {reqTime}
+                </Tag>
+              </Card>
               <Card>
                 <Tag color="#108ee9">{rr.method}</Tag>{rr.uri}
               </Card>
