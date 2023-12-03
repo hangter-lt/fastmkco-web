@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Layout, Menu, theme, Space, Card, Button, Tag, Row, Col } from 'antd';
+import React, { useState, useEffect, useId } from 'react';
+import { Layout, Menu, theme, Card, Tag, Row, Col } from 'antd';
+import { ClockCircleOutlined } from '@ant-design/icons';
 import MenuItem from 'antd/es/menu/MenuItem';
 import Item from 'antd/es/list/Item';
 import axios from "axios";
+import { API_REQUEST, API_REQUESTS, API_REQUESTS_CLOSE } from '../consts';
+
 
 
 const { Content, Sider } = Layout;
@@ -15,6 +18,9 @@ type Item = {
 type Items = Item[]
 const menuItems: Items = []
 var menuItem: Items = []
+const r: Reqres = {
+  time: 0
+}
 
 type Reqres = {
   id?: number
@@ -27,42 +33,54 @@ type Reqres = {
   content?: string
   result?: string
   reason?: string
+  time: number
 }
 
-const r: Reqres = {}
-
-const eventSource = new EventSource(`/api/requests`);
 
 const Requests: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
+
   const [reqs, setReqs] = useState(menuItems)
   const [rr, setRr] = useState(r)
+  const linkId = useId()
 
-  function getRequest(id: number | undefined) {
-    axios.get("/api/requests/" + id).then((res) => {
+  useEffect(() => {
+    menuItem = []
+
+    const eventSource = new EventSource(API_REQUESTS + linkId);
+    eventSource.onopen = function () {
+      console.log("open")
+    }
+    eventSource.onmessage = function (ev) {
+      console.log("event")
+      const item: Item = JSON.parse(ev.data);
+      setReqs([item].concat(menuItem))
+      menuItem.unshift(item)
+    };
+    eventSource.onerror = function () {
+      console.log("error");
+      eventSource.close();
+    };
+
+    return () => {
+      axios.get(API_REQUESTS_CLOSE + linkId).then((res) => {
+        console.log(res.data)
+      })
+      eventSource.close()
+    }
+
+  }, []);
+
+  const getRequest = (id: number | undefined) => {
+    axios.get(API_REQUEST + id).then((res) => {
       setRr(res.data)
     })
   }
 
-  // 处理事件流
-  eventSource.onopen = function () {
-    console.log("open")
-  }
-  eventSource.onmessage = function (ev) {
-
-    console.log("event")
-    const item: Item = JSON.parse(ev.data);
-    setReqs([item].concat(menuItem))
-    menuItem.unshift(item)
-  };
-  eventSource.onerror = function () {
-    console.log("error");
-    eventSource.close();
-  };
-
+  const reqTime = new Date(rr.time).toLocaleString()
 
   return (
     <Layout style={{ height: '100%', padding: '10px 0px', background: colorBgContainer }}>
@@ -82,6 +100,11 @@ const Requests: React.FC = () => {
         <Row style={{ width: "100%" }}>
           <Col span={8}>
             <Card title="请求" style={{ width: "100%" }}>
+              <Card>
+                <Tag icon={<ClockCircleOutlined />} color="purple">
+                  {reqTime}
+                </Tag>
+              </Card>
               <Card>
                 <Tag color="#108ee9">{rr.method}</Tag>{rr.uri}
               </Card>

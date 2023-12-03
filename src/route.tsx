@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { MemoryRouter, Navigate, Route, Routes } from "react-router-dom"
 import Requests from "./api/requests";
 import ApiFiles from "./api/apifiles";
 import Frame from "./frame";
@@ -6,7 +6,7 @@ import { Empty } from 'antd';
 
 function Router() {
     return (
-        <BrowserRouter>
+        <MemoryRouter>
             <Routes>
                 <Route path="/" element={ <Navigate replace to="/mock/home" />} />
                 <Route path="/mock"  element={<Frame />} >
@@ -15,7 +15,7 @@ function Router() {
                     <Route path="files" element={<ApiFiles />} />
                 </Route>
             </Routes>
-        </BrowserRouter>
+        </MemoryRouter>
     )
 }
 

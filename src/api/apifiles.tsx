@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Layout, Tree, theme, Switch } from 'antd';
+import { Layout, Tree, theme, Switch } from 'antd';
 import axios from 'axios';
 import { MdEditor } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
+import { API_TREE, API_FILE, API_FILES_WRITE } from '../consts';
 
 
 const { Content, Sider } = Layout;
-
-// const vditor = new Vditor("md", {mode:"sv"})
 
 const ApiFiles: React.FC = () => {
     const {
@@ -19,25 +18,45 @@ const ApiFiles: React.FC = () => {
     const [tree, setTree] = useState([])
 
     const [content, setContent] = useState("")
+    
+    const [editContent, setEditContent] = useState(content)
+
+    const [path, setPath] = useState("")
 
     function getTree() {
-        axios.get("/api/tree").then((res) => {
+        axios.get(API_TREE).then((res) => {
             setTree(res.data)
         })
     }
 
-    function a(selectedKeys: any, e: {
+    // @ts-ignore
+    const select = (selectedKeys: any, e: {
         event: 'select';
         selected: boolean;
         node: any;
         selectedNodes: any;
         nativeEvent: MouseEvent;
-    }) {
+    }) => {
         if (e.node.type == "file") {
-            axios.get("/api/file/" + e.node.key).then((res) => {
+            axios.get(API_FILE + e.node.key).then((res) => {
                 setContent(res.data)
+                setPath(e.node.key)
             })
         }
+    }
+
+    const change = (v: string) => {
+        setEditContent(v)
+    }
+    
+    // @ts-ignore
+    const save = (v: string, h: Promise<string>)=> {
+        axios.post(API_FILES_WRITE, {
+            "path": path,
+            "file": editContent,
+        }).then((res) => {
+            console.log(res)
+        })
     }
 
     useEffect(() => {
@@ -53,12 +72,17 @@ const ApiFiles: React.FC = () => {
                 <Tree
                     showIcon={showIcon}
                     treeData={tree}
-                    onSelect={a}
+                    onSelect={select}
                 />
 
             </Sider>
             <Content style={{ padding: '30px 30px', display: "flex" }}>
-                <MdEditor modelValue={content} style={{ height: "100%" }} />;
+                <MdEditor
+                    modelValue={content}
+                    style={{ height: "100%" }}
+                    onSave={save}
+                    onChange={change}
+                />;
             </Content>
         </Layout >
     );
