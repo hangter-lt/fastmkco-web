@@ -3,6 +3,7 @@ import { Layout, Tree, theme, Switch } from 'antd';
 import axios from 'axios';
 import { MdEditor } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
+import { API_TREE, API_FILE, API_FILES_WRITE } from '../consts';
 
 
 const { Content, Sider } = Layout;
@@ -23,7 +24,7 @@ const ApiFiles: React.FC = () => {
     const [path, setPath] = useState("")
 
     function getTree() {
-        axios.get("/api/tree").then((res) => {
+        axios.get(API_TREE).then((res) => {
             setTree(res.data)
         })
     }
@@ -37,7 +38,7 @@ const ApiFiles: React.FC = () => {
         nativeEvent: MouseEvent;
     }) => {
         if (e.node.type == "file") {
-            axios.get("/api/file/" + e.node.key).then((res) => {
+            axios.get(API_FILE + e.node.key).then((res) => {
                 setContent(res.data)
                 setPath(e.node.key)
             })
@@ -50,7 +51,7 @@ const ApiFiles: React.FC = () => {
     
     // @ts-ignore
     const save = (v: string, h: Promise<string>)=> {
-        axios.post("/api/files/write", {
+        axios.post(API_FILES_WRITE, {
             "path": path,
             "file": editContent,
         }).then((res) => {

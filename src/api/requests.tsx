@@ -3,6 +3,8 @@ import { Layout, Menu, theme, Card, Tag, Row, Col } from 'antd';
 import MenuItem from 'antd/es/menu/MenuItem';
 import Item from 'antd/es/list/Item';
 import axios from "axios";
+import { API_REQUEST, API_REQUESTS, API_REQUESTS_CLOSE } from '../consts';
+
 
 
 const { Content, Sider } = Layout;
@@ -44,7 +46,7 @@ const Requests: React.FC = () => {
   useEffect(() => {
     menuItem = []
 
-    const eventSource = new EventSource("/api/requests?link_id=" + linkId);
+    const eventSource = new EventSource(API_REQUESTS + linkId);
     eventSource.onopen = function () {
       console.log("open")
     }
@@ -60,7 +62,7 @@ const Requests: React.FC = () => {
     };
    
     return () => {
-      axios.get("/api/close?link_id=" + linkId).then((res) => {
+        axios.get(API_REQUESTS_CLOSE + linkId).then((res) => {
         console.log(res.data)
       })
       eventSource.close()
@@ -69,7 +71,7 @@ const Requests: React.FC = () => {
   }, []);
 
   const getRequest = (id: number | undefined) => {
-    axios.get("/api/requests/" + id).then((res) => {
+    axios.get(API_REQUEST + id).then((res) => {
       setRr(res.data)
     })
   }

@@ -3,10 +3,13 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build:{
+    assetsDir: "9bb29bc2dcb6d6e9",
+  },
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
+      "/9bb29bc2dcb6d6e9": {
         target: 'http://localhost:5000/',
         changeOrigin: true,
       }
