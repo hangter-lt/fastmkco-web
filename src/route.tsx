@@ -19,7 +19,7 @@ function Router() {
     )
 }
 
-const Home = () => <Empty description={false} />;
+const Home = () => <Empty style={{margin: 200}} description={false} />;
 
 export default Router;
 
