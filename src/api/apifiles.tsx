@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Tree, theme, Switch, Empty } from 'antd';
+import { Layout, Tree, theme, Switch, Empty, Tag } from 'antd';
 import axios from 'axios';
 import { MdEditor, ToolbarNames } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
@@ -89,7 +89,7 @@ const ApiFiles: React.FC = () => {
                 <Empty style={{ margin: 200 }} description={false} />
             )}
             {path != "" && (
-                <Content style={{ padding: '30px 30px', display: "flex" }}>
+                <Content style={{ padding: '30px 30px' }}>
                     <MdEditor
                         toolbars={toolbars}
                         modelValue={content}
@@ -97,6 +97,7 @@ const ApiFiles: React.FC = () => {
                         onSave={save}
                         onChange={change}
                     />
+                    <Tag color='red' bordered={false}>单机左上角按钮或输入Ctrl+S保存</Tag>
                 </Content>
             )}
         </Layout >
