@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useId } from 'react';
-import { Layout, Menu, theme, Card, Tag, Row, Col } from 'antd';
+import { Layout, Menu, theme, Card, Tag, Row, Col, Empty } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import MenuItem from 'antd/es/menu/MenuItem';
 import Item from 'antd/es/list/Item';
@@ -83,7 +83,7 @@ const Requests: React.FC = () => {
   const reqTime = new Date(rr.time).toLocaleString()
 
   return (
-    <Layout style={{ height: '100%', padding: '10px 0px', background: colorBgContainer }}>
+    <Layout style={{ height: '100%', padding: '10px 0px', background: colorBgContainer }} >
       <Sider style={{ background: colorBgContainer, overflow: 'auto' }} width={300}>
         <Menu
           mode="inline"
@@ -96,52 +96,56 @@ const Requests: React.FC = () => {
           ))}
         </Menu>
       </Sider>
-      <Content style={{ padding: '30px 30px', display: "flex" }}>
-        <Row style={{ width: "100%" }}>
-          <Col span={8}>
-            <Card title="请求" style={{ width: "100%" }}>
-              <Card>
-                <Tag icon={<ClockCircleOutlined />} color="purple">
-                  {reqTime}
-                </Tag>
-              </Card>
-              <Card>
-                <Tag color="#108ee9">{rr.method}</Tag>{rr.uri}
-              </Card>
-              <br />
-              <Card title="header">
-                <p style={{ whiteSpace: "pre-wrap" }}>
-                  {rr.header}
-                </p>
-              </Card>
-              <br></br>
-              <Card title="params">
-                <p style={{ whiteSpace: "pre-wrap" }}>
-                  {JSON.stringify(JSON.parse(rr.params == undefined || rr.params == '' ? '{}' : rr.params), null, 4)}
-                </p>
-              </Card>
-              <br></br>
+      {rr.id == undefined && (
+        <Empty style={{ margin: 200 }} description={false} />
+      )}
+      {rr.id != undefined && (
+        <Content style={{ padding: '30px 30px', display: "flex" }}>
+          <Row style={{ width: "100%" }}>
+            <Col span={8}>
+              <Card title="请求" style={{ width: "100%" }}>
+                <Card>
+                  <Tag icon={<ClockCircleOutlined />} color="purple">
+                    {reqTime}
+                  </Tag>
+                </Card>
+                <Card>
+                  <Tag color="#108ee9">{rr.method}</Tag>{rr.uri}
+                </Card>
+                <br />
+                <Card title="header">
+                  <p style={{ whiteSpace: "pre-wrap" }}>
+                    {rr.header}
+                  </p>
+                </Card>
+                <br></br>
+                <Card title="params">
+                  <p style={{ whiteSpace: "pre-wrap" }}>
+                    {JSON.stringify(JSON.parse(rr.params == undefined || rr.params == '' ? '{}' : rr.params), null, 4)}
+                  </p>
+                </Card>
+                <br></br>
 
-            </Card>
-          </Col>
-          <Col span={14} offset={1}>
-            <Card title="响应" style={{ width: "100%" }} >
-              <Card>
-                <Tag color={rr.code == 200 ? '#87d068' : '#f50'}>{rr.code}</Tag>{rr.content_type}
               </Card>
-              <br />
-              <Card title="body">
-                <p style={{ whiteSpace: "pre-wrap" }}>
-                  {rr.content}
-                </p>
-                {rr.reason}
+            </Col>
+            <Col span={14} offset={1}>
+              <Card title="响应" style={{ width: "100%" }} >
+                <Card>
+                  <Tag color={rr.code == 200 ? '#87d068' : '#f50'}>{rr.code}</Tag>{rr.content_type}
+                </Card>
+                <br />
+                <Card title="body">
+                  <p style={{ whiteSpace: "pre-wrap" }}>
+                    {rr.content}
+                  </p>
+                  {rr.reason}
+                </Card>
               </Card>
-            </Card>
-          </Col>
-        </Row>
-
-      </Content>
-    </Layout>
+            </Col>
+          </Row>
+        </Content>
+      )}
+    </Layout >
   );
 };
 

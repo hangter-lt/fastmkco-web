@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Tree, theme, Switch } from 'antd';
+import { Layout, Tree, theme, Switch, Empty, Tag } from 'antd';
 import axios from 'axios';
-import { MdEditor } from 'md-editor-rt';
+import { MdEditor, ToolbarNames } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
 import { API_TREE, API_FILE, API_FILES_WRITE } from '../consts';
 
@@ -18,12 +18,22 @@ const ApiFiles: React.FC = () => {
     const [tree, setTree] = useState([])
 
     const [content, setContent] = useState("")
-    
-    const [editContent, setEditContent] = useState(content)
 
     const [path, setPath] = useState("")
 
-    function getTree() {
+    const toolbars: ToolbarNames[] | undefined = [
+        'save',
+        'unorderedList',
+        'codeRow',
+        'code',
+        '=',
+        'pageFullscreen',
+        'fullscreen',
+        'preview',
+        'catalog',
+    ];
+
+    const getTree = () => {
         axios.get(API_TREE).then((res) => {
             setTree(res.data)
         })
@@ -46,14 +56,14 @@ const ApiFiles: React.FC = () => {
     }
 
     const change = (v: string) => {
-        setEditContent(v)
+        setContent(v)
     }
-    
+
     // @ts-ignore
-    const save = (v: string, h: Promise<string>)=> {
+    const save = (v: string, h: Promise<string>) => {
         axios.post(API_FILES_WRITE, {
             "path": path,
-            "file": editContent,
+            "file": content,
         }).then((res) => {
             console.log(res)
         })
@@ -62,7 +72,6 @@ const ApiFiles: React.FC = () => {
     useEffect(() => {
         getTree()
     }, []);
-
 
     return (
         <Layout style={{ background: colorBgContainer, height: '100%', padding: '10px 0px' }}>
@@ -76,14 +85,21 @@ const ApiFiles: React.FC = () => {
                 />
 
             </Sider>
-            <Content style={{ padding: '30px 30px', display: "flex" }}>
-                <MdEditor
-                    modelValue={content}
-                    style={{ height: "100%" }}
-                    onSave={save}
-                    onChange={change}
-                />;
-            </Content>
+            {path == "" && (
+                <Empty style={{ margin: 200 }} description={false} />
+            )}
+            {path != "" && (
+                <Content style={{ padding: '30px 30px' }}>
+                    <MdEditor
+                        toolbars={toolbars}
+                        modelValue={content}
+                        style={{ height: "100%" }}
+                        onSave={save}
+                        onChange={change}
+                    />
+                    <Tag color='red' bordered={false}>单机左上角按钮或输入Ctrl+S保存</Tag>
+                </Content>
+            )}
         </Layout >
     );
 };
